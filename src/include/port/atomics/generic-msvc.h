@@ -80,7 +80,7 @@ pg_atomic_compare_exchange_u64_impl(volatile pg_atomic_uint64 *ptr,
 {
 	bool	ret;
 	uint64	current;
-	current = _InterlockedCompareExchange64(&ptr->value, newval, *expected);
+	current = _InterlockedCompareExchange64((volatile int64_t*) &ptr->value, (int64_t) newval, (int64_t) *expected);
 	ret = current == *expected;
 	*expected = current;
 	return ret;
@@ -94,7 +94,7 @@ pg_atomic_compare_exchange_u64_impl(volatile pg_atomic_uint64 *ptr,
 static inline uint64
 pg_atomic_fetch_add_u64_impl(volatile pg_atomic_uint64 *ptr, int64 add_)
 {
-	return _InterlockedExchangeAdd64(&ptr->value, add_);
+	return _InterlockedExchangeAdd64((volatile int64_t*) &ptr->value, add_);
 }
 #endif /* _WIN64 */
 
