@@ -21,7 +21,7 @@
 typedef void (*listen_init_hook_type)(void);
 
 /* Globals in postmaster.c */
-extern	listen_init_hook_type listen_init_hook;
+extern PGDLLIMPORT listen_init_hook_type listen_init_hook;
 
 /* Functions in postmaster.c */
 extern int	listen_have_free_slot(void);
