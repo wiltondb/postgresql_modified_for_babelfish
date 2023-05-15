@@ -264,7 +264,7 @@ bool ENRgetSystableScan(Relation rel, Oid indexId, int nkeys, ScanKey key, List 
 				reloid != ConstraintRelationId && 
 				reloid != StatisticRelationId &&
 				reloid != StatisticExtRelationId)
-		return NULL;
+		return false;
 
 	switch (nkeys) {
 		case 4:
