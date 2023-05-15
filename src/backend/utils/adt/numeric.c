@@ -5984,24 +5984,28 @@ bigint_poly_aggr_final(FunctionCallInfo fcinfo, tsqlAggType aggType)
 			}
 		}
 	#else
-		if (tsqlAggType == TSQL_SUM)
-			temp = numeric_sum(fcinfo);
-		/* If the aggregate type is TSQL_AVG */
-		else
-			temp = numeric_avg(fcinfo);
-				
+		temp = numeric_sum(fcinfo);
 		init_var(&nvar);
 		set_var_from_num(DatumGetNumeric(temp), &nvar);
 		is_overflow = !(numericvar_to_int64(&nvar, &result));
 		free_var(&nvar);
 
 		if (is_overflow)
+		{
 			ereport(ERROR,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					errmsg("Arithmetic overflow error converting expression to data type bigint.")));
-		else
 			PG_RETURN_INT64(result);
-
+		} else {
+			if (aggType == TSQL_SUM)
+				PG_RETURN_INT64(result);
+			/* If the aggregate type is TSQL_AVG */
+			else
+			{
+				result /= state->N;
+				PG_RETURN_INT64(result);
+			}
+		}
 	#endif
 }
 
