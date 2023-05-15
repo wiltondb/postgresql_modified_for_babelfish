@@ -231,10 +231,12 @@ static Node *makeRecursiveViewSelect(char *relname, List *aliases, Node *query);
 #include "libpq/libpq-be.h" /* needed for MyProcPort->is_tds_client */
 #include "miscadmin.h" /* needed for MyProcPort->is_tds_client */
 
+#ifndef BABELFISH_EXTENSION_BUILD
 rewrite_typmod_expr_hook_type rewrite_typmod_expr_hook = NULL;
 validate_numeric_typmods_hook_type validate_numeric_typmods_hook = NULL;
 check_recursive_cte_hook_type check_recursive_cte_hook = NULL;
 fix_domain_typmods_hook_type fix_domain_typmods_hook = NULL;
+#endif // !BABELFISH_EXTENSION_BUILD
 %}
 
 %pure-parser
