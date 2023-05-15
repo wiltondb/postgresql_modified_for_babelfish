@@ -14,6 +14,7 @@ use Carp;
 use File::Basename;
 use File::Copy;
 use File::Find ();
+use File::Spec::Functions qw(catfile);
 
 use Exporter;
 our (@ISA, @EXPORT_OK);
@@ -125,6 +126,7 @@ sub Install
 		"libpgport\\libpgport.lib");
 	CopyContribFiles($config, $target);
 	CopyIncludeFiles($target);
+	CopyDepSharedLibs($config, $target);
 
 	if ($insttype ne "client")
 	{
@@ -698,6 +700,97 @@ sub CopyIncludeFiles
 		$target . '/include/informix/esql/',
 		'src/interfaces/ecpg/include/',
 		split /\s+/, $1);
+	return;
+}
+
+sub CopyDepSharedLibs
+{
+	my $config = shift;
+	my $target = shift;
+
+	EnsureDirectories($target, 'bin');
+
+	if ($config->{icu}) {
+		my $icu_bin = catfile($config->{icu}, "bin64");
+		my @icudt_lst = glob(catfile($icu_bin, "icudt*.dll"));
+		my $icudt_lst_len = @icudt_lst;
+		if (1 != $icudt_lst_len) {
+			croak("Could not find icudtNN.dll in $icu_bin");
+		}
+		my $icudt = $icudt_lst[0];
+		$icudt =~ /icudt(\d{2})\.dll/;
+		if (!$1) {
+			croak("Could not find icudtNN.dll in $icu_bin, found: $icudt");
+		}
+		my $icu_version = $1;
+		my $icuucd = catfile($icu_bin, "icuuc${icu_version}d.dll");
+		my $debug_suffix = "";
+		if (-f $icuucd) {
+			$debug_suffix = "d";
+		}
+		CopyFiles(
+			'ICU', $target . '/bin/', $icu_bin . '/',
+			"icudt${icu_version}.dll",
+			"icuuc${icu_version}${debug_suffix}.dll",
+			"icuin${icu_version}${debug_suffix}.dll");
+	}
+	if ($config->{lz4}) {
+		my $lz4_bin = catfile($config->{lz4}, "bin");
+		CopyFiles(
+			'LZ4', $target . '/bin/', $lz4_bin . '/',
+			'lz4.dll');
+	}
+	if ($config->{zstd}) {
+		my $zstd_bin = catfile($config->{zstd}, "bin");
+		CopyFiles(
+			'Zstandard', $target . '/bin/', $zstd_bin . '/',
+			'zstd.dll');
+	}
+	if ($config->{openssl}) {
+		my $openssl_bin = catfile($config->{openssl}, "bin");
+		CopyFiles(
+			'OpenSSL', $target . '/bin/', $openssl_bin . '/',
+			'libcrypto-3-x64.dll', 'libssl-3-x64.dll');
+	}
+	if ($config->{uuid}) {
+		my $uuid_bin = catfile($config->{uuid}, "bin");
+		CopyFiles(
+			'libuuid', $target . '/bin/', $uuid_bin . '/',
+			'uuid_win.dll');
+	}
+	if ($config->{xml}) {
+		my $xml_bin = catfile($config->{xml}, "bin");
+		my $libxmld = catfile($xml_bin, "libxml2d.dll");
+		my $debug_suffix = "";
+		if (-f $libxmld) {
+			$debug_suffix = "d";
+		}
+		CopyFiles(
+			'libxml2', $target . '/bin/', $xml_bin . '/',
+			"libxml2${debug_suffix}.dll");
+	}
+	if ($config->{xslt}) {
+		my $xslt_bin = catfile($config->{xslt}, "bin");
+		my $libxsltd = catfile($xslt_bin, "libxsltd.dll");
+		my $debug_suffix = "";
+		if (-f $libxsltd) {
+			$debug_suffix = "d";
+		}
+		CopyFiles(
+			'libxslt', $target . '/bin/', $xslt_bin . '/',
+			"libxslt${debug_suffix}.dll");
+	}
+	if ($config->{zlib}) {
+		my $zlib_bin = catfile($config->{zlib}, "bin");
+		my $zlibd = catfile($zlib_bin, "zlibd.dll");
+		my $debug_suffix = "";
+		if (-f $zlibd) {
+			$debug_suffix = "d";
+		}
+		CopyFiles(
+			'zlib', $target . '/bin/', $zlib_bin . '/',
+			"zlib${debug_suffix}.dll");
+	}
 	return;
 }
 
