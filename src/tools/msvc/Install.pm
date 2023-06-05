@@ -763,11 +763,13 @@ sub CopyDepSharedLibs
 		CopyFiles(
 			'OpenSSL', $target . '/bin/', $openssl_bin . '/',
 			'libcrypto-3-x64.dll',
-			'libssl-3-x64.dll');
+			'libssl-3-x64.dll',
+			'openssl.exe');
 		CopyFiles(
 			'OpenSSL debug info', $target . '/symbols/', $openssl_bin . '/',
 			'libcrypto-3-x64.pdb',
-			'libssl-3-x64.pdb');
+			'libssl-3-x64.pdb',
+			'openssl.pdb');
 	}
 	if ($config->{uuid}) {
 		my $uuid_bin = catfile($config->{uuid}, "bin");
