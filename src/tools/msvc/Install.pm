@@ -760,11 +760,15 @@ sub CopyDepSharedLibs
 	}
 	if ($config->{openssl}) {
 		my $openssl_bin = catfile($config->{openssl}, "bin");
+		my $openssl_ssl = catfile($config->{openssl}, "ssl");
 		CopyFiles(
 			'OpenSSL', $target . '/bin/', $openssl_bin . '/',
 			'libcrypto-3-x64.dll',
 			'libssl-3-x64.dll',
 			'openssl.exe');
+		CopyFiles(
+			'OpenSSL config', $target . '/share/', $openssl_ssl . '/',
+			'openssl.cnf');
 		CopyFiles(
 			'OpenSSL debug info', $target . '/symbols/', $openssl_bin . '/',
 			'libcrypto-3-x64.pdb',
