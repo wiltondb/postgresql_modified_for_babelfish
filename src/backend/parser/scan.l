@@ -67,9 +67,11 @@ fprintf_to_ereport(const char *fmt, const char *msg)
  * as such, changing their values can induce very unintuitive behavior.
  * But we shall have to live with it until we can remove these variables.
  */
+#ifndef BABELFISH_EXTENSION_BUILD
 int			backslash_quote = BACKSLASH_QUOTE_SAFE_ENCODING;
 bool		escape_string_warning = true;
 bool		standard_conforming_strings = true;
+#endif // !BABELFISH_EXTENSION_BUILD
 
 /*
  * Constant data exported from this file.  This array maps from the
@@ -80,9 +82,11 @@ bool		standard_conforming_strings = true;
  */
 #define PG_KEYWORD(kwname, value, category, collabel) value,
 
+#ifndef BABELFISH_EXTENSION_BUILD
 const uint16 ScanKeywordTokens[] = {
 #include "parser/kwlist.h"
 };
+#endif // !BABELFISH_EXTENSION_BUILD
 
 #undef PG_KEYWORD
 
@@ -148,8 +152,10 @@ extern int	core_yyget_column(yyscan_t yyscanner);
 extern void core_yyset_column(int column_no, yyscan_t yyscanner);
 
 /* T-SQL specific variables widely used in backend code */
+#ifndef BABELFISH_EXTENSION_BUILD
 int sql_dialect = SQL_DIALECT_PG;
 bool pltsql_case_insensitive_identifiers = true;
+#endif // !BABELFISH_EXTENSION_BUILD
 
 /* Some extensions, e.g., Babelfish,
  * may include original PG lexer in addition to their own lexer.
@@ -158,7 +164,9 @@ bool pltsql_case_insensitive_identifiers = true;
  * to exclude the PG-specific logic.
  */
 #define PG_YYLEX
+#ifndef BABELFISH_EXTENSION_BUILD
 core_yylex_hook_type core_yylex_hook = NULL;
+#endif // !BABELFISH_EXTENSION_BUILD
 
 /* Please note that the following line will be replaced with the contents of given file name even if with starting with a comment */
 /*$$include "scan-tsql-prologue.l.h"*/
