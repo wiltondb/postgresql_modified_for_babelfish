@@ -533,7 +533,7 @@ extern bool IsTransactionBlockActive(void);
 extern void RollbackAndReleaseSavepoint(const char *name);
 
 /* Nested transaction count */
-extern uint32 NestedTranCount;
-extern bool AbortCurTransaction;
+extern PGDLLIMPORT uint32 NestedTranCount;
+extern PGDLLIMPORT bool AbortCurTransaction;
 
 #endif							/* XACT_H */

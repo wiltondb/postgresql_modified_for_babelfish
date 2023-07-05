@@ -47,7 +47,7 @@ extern PGDLLIMPORT pltsql_resetcache_hook_type pltsql_resetcache_hook;
 
 /* Sequence setval hook */
 typedef int64 (*pltsql_setval_hook_type) (Oid seqid, int64 val, int64 last_val);
-extern pltsql_setval_hook_type pltsql_setval_hook;
+extern PGDLLIMPORT pltsql_setval_hook_type pltsql_setval_hook;
 
 typedef struct FormData_pg_sequence_data
 {

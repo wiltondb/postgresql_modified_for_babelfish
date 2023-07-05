@@ -85,8 +85,8 @@ typedef EphemeralNamedRelationData *EphemeralNamedRelation;
  */
 typedef struct QueryEnvironment QueryEnvironment;
 
-extern struct QueryEnvironment *currentQueryEnv;
-extern struct QueryEnvironment *topLevelQueryEnv;
+extern PGDLLIMPORT struct QueryEnvironment *currentQueryEnv;
+extern PGDLLIMPORT struct QueryEnvironment *topLevelQueryEnv;
 
 extern QueryEnvironment *create_queryEnv(void);
 extern QueryEnvironment *create_queryEnv2(MemoryContext cxt, bool top_level);
