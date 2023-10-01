@@ -148,6 +148,8 @@ static int	nseclabels = 0;
 
 /* Babelfish logical database to dump */
 char *bbf_db_name = NULL;
+/* true if current database has "babelfishpg_tsql" extension installed */
+static bool is_bbf_db = false;
 
 /*
  * The default number of rows per INSERT when
@@ -771,7 +773,11 @@ main(int argc, char **argv)
 
 	pg_log_info("last built-in OID is %u", g_last_builtin_oid);
 
-	prepareForBabelfishDatabaseDump(fout, &schema_include_patterns);
+	is_bbf_db = isBabelfishDatabase(fout);
+
+	if (is_bbf_db) {
+		prepareForBabelfishDatabaseDump(fout, &schema_include_patterns);
+	}
 
 	/* Expand schema selection patterns into OID lists */
 	if (schema_include_patterns.head != NULL)
@@ -2184,12 +2190,15 @@ dumpTableData_insert(Archive *fout, const void *dcontext)
 		if (tbinfo->attgenerated[i] && (dopt->column_inserts || dump_with_inserts))
 			continue;
 
-		/* Skip TSQL ROWVERSION/TIMESTAMP column, it should be re-generated during restore. */
-		if (pg_strcasecmp(tbinfo->atttypnames[i],
-				quote_all_identifiers ? "\"sys\".\"rowversion\"" : "sys.rowversion") == 0 ||
-			pg_strcasecmp(tbinfo->atttypnames[i],
-				quote_all_identifiers ? "\"sys\".\"timestamp\"" : "sys.timestamp") == 0)
-			continue;
+		if (is_bbf_db)
+		{
+			/* Skip TSQL ROWVERSION/TIMESTAMP column, it should be re-generated during restore. */
+			if (pg_strcasecmp(tbinfo->atttypnames[i],
+					quote_all_identifiers ? "\"sys\".\"rowversion\"" : "sys.rowversion") == 0 ||
+				pg_strcasecmp(tbinfo->atttypnames[i],
+					quote_all_identifiers ? "\"sys\".\"timestamp\"" : "sys.timestamp") == 0)
+				continue;
+		}
 
 		if (nfields > 0)
 			appendPQExpBufferStr(q, ", ");
@@ -2221,7 +2230,7 @@ dumpTableData_insert(Archive *fout, const void *dcontext)
 		/* cross-check field count, allowing for dummy NULL if any */
 		if (nfields != PQnfields(res) &&
 			!(nfields == 0 && PQnfields(res) == 1))
-				if(nfields_new != PQnfields(res))
+				if(!is_bbf_db || nfields_new != PQnfields(res))
 					pg_fatal("wrong number of fields retrieved from table \"%s\"",
 							 tbinfo->dobj.name);
 
@@ -2322,11 +2331,14 @@ dumpTableData_insert(Archive *fout, const void *dcontext)
 					continue;
 				}
 
-				if(sqlvar_metadata_pos && sqlvar_metadata_pos[field] > 0)
+				if (is_bbf_db)
 				{
-					castSqlvariantToBasetype(res, fout, tuple, field,
-										sqlvar_metadata_pos[field]);
-					continue;
+					if(sqlvar_metadata_pos && sqlvar_metadata_pos[field] > 0)
+					{
+						castSqlvariantToBasetype(res, fout, tuple, field,
+											sqlvar_metadata_pos[field]);
+						continue;
+					}
 				}
 				/* XXX This code is partially duplicated in ruleutils.c */
 				switch (PQftype(res, field))
@@ -2423,8 +2435,11 @@ dumpTableData_insert(Archive *fout, const void *dcontext)
 	if (insertStmt != NULL)
 		destroyPQExpBuffer(insertStmt);
 	free(attgenerated);
-	if(sqlvar_metadata_pos)
-		free(sqlvar_metadata_pos);
+	if (is_bbf_db)
+	{
+		if(sqlvar_metadata_pos)
+			free(sqlvar_metadata_pos);
+	}
 
 	return 1;
 }
@@ -11942,8 +11957,11 @@ dumpFunc(Archive *fout, const FuncInfo *finfo)
 	else
 		keyword = "FUNCTION";	/* works for window functions too */
 
-	/* set PL/tsql specific GUCs */
-	setOrResetPltsqlFuncRestoreGUCs(fout, q, finfo, prokind[0], proretset[0] == 't', true);
+	if (is_bbf_db)
+	{
+		/* set PL/tsql specific GUCs */
+		setOrResetPltsqlFuncRestoreGUCs(fout, q, finfo, prokind[0], proretset[0] == 't', true);
+	}
 
 	appendPQExpBuffer(delqry, "DROP %s %s;\n",
 					  keyword, qual_funcsig);
@@ -12097,8 +12115,11 @@ dumpFunc(Archive *fout, const FuncInfo *finfo)
 
 	appendPQExpBuffer(q, "\n    %s;\n", asPart->data);
 
-	/* reset the settings of PL/tsql GUCs */
-	setOrResetPltsqlFuncRestoreGUCs(fout, q, finfo, prokind[0], proretset[0] == 't', false);
+	if (is_bbf_db)
+	{
+		/* reset the settings of PL/tsql GUCs */
+		setOrResetPltsqlFuncRestoreGUCs(fout, q, finfo, prokind[0], proretset[0] == 't', false);
+	}
 
 	append_depends_on_extension(fout, q, &finfo->dobj,
 								"pg_catalog.pg_proc", keyword,
