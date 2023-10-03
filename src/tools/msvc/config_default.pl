@@ -17,7 +17,7 @@ our $config = {
 	lz4       => "$ENV{PGWIN_DEPS_DIR}/lz4",    # --with-lz4=<path>
 	zstd      => "$ENV{PGWIN_DEPS_DIR}/zstd",    # --with-zstd=<path>
 	nls       => undef,    # --enable-nls=<path>
-	tap_tests => undef,    # --enable-tap-tests
+	tap_tests => 1,    # --enable-tap-tests
 	tcl       => undef,    # --with-tcl=<path>
 	perl      => undef,    # --with-perl=<path>
 	python    => undef,    # --with-python=<path>

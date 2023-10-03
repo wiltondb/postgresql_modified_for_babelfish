@@ -338,10 +338,10 @@ my $sys_tempdir = PostgreSQL::Test::Utils::tempdir_short;
 
 # On Windows use the short location to avoid path length issues.
 # Elsewhere use $tempdir to avoid file system boundary issues with moving.
-my $tmploc = $windows_os ? $sys_tempdir : $tempdir;
+my $tmploc = $windows_os ? $tempdir : $tempdir;
 
 rename("$pgdata/pg_replslot", "$tmploc/pg_replslot")
-  or BAIL_OUT "could not move $pgdata/pg_replslot";
+  or BAIL_OUT "could not move $pgdata/pg_replslot to $tmploc/pg_replslot";
 dir_symlink("$tmploc/pg_replslot", "$pgdata/pg_replslot")
   or BAIL_OUT "could not symlink to $pgdata/pg_replslot";
 

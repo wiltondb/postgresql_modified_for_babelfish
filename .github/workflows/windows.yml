@@ -1,0 +1,29 @@
+name: "Windows"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: clone-repository
+      uses: actions/checkout@v3
+    - name: rename-dir
+      working-directory: ${{ env.GITHUB_WORKSPACE }}/../..
+      run: Move-Item –Path $env:GITHUB_WORKSPACE -Destination $env:GITHUB_WORKSPACE/../../pg
+    - name: build-postgres
+      working-directory: ${{ env.GITHUB_WORKSPACE }}/../..
+      run: cmd /c "$env:GITHUB_WORKSPACE\..\..\pg\.github\scripts\windows-build.bat"
+    - name: rename-back
+      working-directory: ${{ env.GITHUB_WORKSPACE }}/../..
+      run: |
+        Move-Item –Path $env:GITHUB_WORKSPACE/../../pg -Destination $env:GITHUB_WORKSPACE
+    - name: upload-log
+      if: true
+      uses: actions/upload-artifact@v3
+      with:
+        name: test_log
+        path: src/bin/pg_rewind/tmp_check/log
+        retention-days: 1
