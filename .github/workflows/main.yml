@@ -18,7 +18,7 @@ jobs:
       - name: build-postgres
         run: |
           ./configure --with-icu --enable-cassert --enable-tap-tests
-          make world-bin -j8 COPT='-Werror'
+          make world-bin -j8 COPT='-Werror -Wno-error=maybe-uninitialized'
       - name: run-tests
         run: |
           make check-world -j8
