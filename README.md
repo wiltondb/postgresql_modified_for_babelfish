@@ -1,3 +1,12 @@
+PostgreSQL modified for Babelfish and WiltonDB
+==============================================
+
+This fork contains the "PostgreSQL modified for Babelfish" codebase with
+a few patches applied to support Windows MSVC builds along with Linux ones.
+
+Original readme:
+================
+
 ## Babelfish for PostgreSQL
 
 This repository contains the PostgreSQL code base with a patch applied to
