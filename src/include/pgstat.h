@@ -720,4 +720,11 @@ extern PGDLLIMPORT guc_newval_hook_type guc_newval_hook;
 typedef bool (*tsql_has_pgstat_permissions_hook_type) (Oid role);
 extern PGDLLIMPORT tsql_has_pgstat_permissions_hook_type tsql_has_pgstat_permissions_hook;
 
+typedef void (*pltsql_pgstat_end_function_usage_hook_type) (FunctionCallInfo fcinfo, 
+															PgStat_FunctionCallUsage *fcu,
+															char prokind, bool finalize);
+extern PGDLLIMPORT pltsql_pgstat_end_function_usage_hook_type pltsql_pgstat_end_function_usage_hook;
+
+extern PGDLLEXPORT bool lookup_pgstat_entry_in_cache(PgStat_Kind kind, Oid dboid, Oid objoid);
+
 #endif							/* PGSTAT_H */

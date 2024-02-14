@@ -862,10 +862,21 @@ fmgr_security_definer(PG_FUNCTION_ARGS)
 		 * We could be calling either a regular or a set-returning function,
 		 * so we have to test to see what finalize flag to use.
 		 */
-		pgstat_end_function_usage(&fcusage,
-								  (fcinfo->resultinfo == NULL ||
-								   !IsA(fcinfo->resultinfo, ReturnSetInfo) ||
-								   ((ReturnSetInfo *) fcinfo->resultinfo)->isDone != ExprMultipleResult));
+		
+		if (pltsql_pgstat_end_function_usage_hook)
+		{
+			(*pltsql_pgstat_end_function_usage_hook)(fcinfo, &fcusage, fcache->prokind, 
+													 (fcinfo->resultinfo == NULL ||
+													  !IsA(fcinfo->resultinfo, ReturnSetInfo) ||
+													  ((ReturnSetInfo *) fcinfo->resultinfo)->isDone != ExprMultipleResult));
+		}
+		else
+		{
+			pgstat_end_function_usage(&fcusage,
+									  (fcinfo->resultinfo == NULL ||
+									   !IsA(fcinfo->resultinfo, ReturnSetInfo) ||
+									   ((ReturnSetInfo *) fcinfo->resultinfo)->isDone != ExprMultipleResult));
+		}
 	}
 	PG_CATCH();
 	{
