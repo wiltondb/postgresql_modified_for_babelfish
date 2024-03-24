@@ -2900,6 +2900,8 @@ InitProcessGlobals(void)
 	 */
 #ifndef WIN32
 	srandom(pg_prng_uint32(&pg_global_prng_state));
+#else
+	srand(pg_prng_uint32(&pg_global_prng_state));
 #endif
 }
 
