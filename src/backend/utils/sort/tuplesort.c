@@ -2943,7 +2943,7 @@ selectnewtape(Tuplesortstate *state)
 		state->nOutputTapes++;
 		state->nOutputRuns++;
 	}
-	else
+	else if (state->nOutputTapes > 0)
 	{
 		/*
 		 * We have reached the max number of tapes.  Append to an existing
@@ -2951,6 +2951,12 @@ selectnewtape(Tuplesortstate *state)
 		 */
 		state->destTape = state->outputTapes[state->nOutputRuns % state->nOutputTapes];
 		state->nOutputRuns++;
+	}
+	else
+	{
+		ereport(ERROR,
+				(errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
+				 errmsg("nOutputTapes cannot be zero")));
 	}
 }
 
