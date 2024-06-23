@@ -21,7 +21,7 @@ use File::Path qw(make_path remove_tree);
 use File::Spec::Functions qw(catfile);
 use LWP::Simple qw(getstore);
 
-my $pgwin_deps_version = "2024_02_11-1";
+my $pgwin_deps_version = "2024_06_23-1";
 my $flexbison_version = "flex-2.6.4_bison-3.8.2-1";
 my $diff_version = "v3.6-1";
 
