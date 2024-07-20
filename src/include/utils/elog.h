@@ -417,6 +417,9 @@ extern void send_message_to_frontend(ErrorData *edata);
 typedef void (*emit_log_hook_type) (ErrorData *edata);
 extern PGDLLIMPORT emit_log_hook_type emit_log_hook;
 
+/* Hook for collecting backtrace for ERROR level messages */
+typedef void (*emit_log_backtrace_hook_type) (ErrorData *edata);
+extern PGDLLIMPORT emit_log_backtrace_hook_type emit_log_backtrace_hook;
 
 /* GUC-configurable parameters */
 
