@@ -2196,7 +2196,9 @@ dumpTableData_insert(Archive *fout, const void *dcontext)
 			if (pg_strcasecmp(tbinfo->atttypnames[i],
 					quote_all_identifiers ? "\"sys\".\"rowversion\"" : "sys.rowversion") == 0 ||
 				pg_strcasecmp(tbinfo->atttypnames[i],
-					quote_all_identifiers ? "\"sys\".\"timestamp\"" : "sys.timestamp") == 0)
+					quote_all_identifiers ? "\"sys\".\"timestamp\"" : "sys.timestamp") == 0 ||
+				pg_strcasecmp(tbinfo->atttypnames[i],
+					quote_all_identifiers ? "\"sys\".\"\"timestamp\"\"" : "sys.\"timestamp\"") == 0)
 				continue;
 		}
 
@@ -18416,7 +18418,9 @@ fmtCopyColumnList(const TableInfo *ti, PQExpBuffer buffer)
 		if (pg_strcasecmp(atttypnames[i],
 				quote_all_identifiers ? "\"sys\".\"rowversion\"" : "sys.rowversion") == 0 ||
 			pg_strcasecmp(atttypnames[i],
-				quote_all_identifiers ? "\"sys\".\"timestamp\"" : "sys.timestamp") == 0)
+				quote_all_identifiers ? "\"sys\".\"timestamp\"" : "sys.timestamp") == 0 ||
+			pg_strcasecmp(atttypnames[i],
+				quote_all_identifiers ? "\"sys\".\"\"timestamp\"\"" : "sys.\"timestamp\"") == 0)
 			continue;
 
 		if (needComma)
