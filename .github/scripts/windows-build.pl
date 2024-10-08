@@ -21,7 +21,7 @@ use File::Path qw(make_path remove_tree);
 use File::Spec::Functions qw(catfile);
 use LWP::Simple qw(getstore);
 
-my $pgwin_deps_version = "2024_06_23-1";
+my $pgwin_deps_version = "2024_09_26-1";
 my $flexbison_version = "flex-2.6.4_bison-3.8.2-1";
 my $diff_version = "v3.6-1";
 
@@ -82,7 +82,7 @@ sub download_diff {
 }
 
 my $pgwin_deps_dir = download_pgwin_deps();
-$ENV{PGWIN_DEPS_DIR} = "$pgwin_deps_dir/release";
+$ENV{PGWIN_DEPS_DIR} = "$pgwin_deps_dir/release-icu73";
 my $flexbison_dir = download_flexbison();
 $ENV{PATH} = "$ENV{PATH};$flexbison_dir";
 my $diff_dir = download_diff();

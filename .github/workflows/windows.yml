@@ -22,7 +22,7 @@ jobs:
         Move-Item –Path $env:GITHUB_WORKSPACE/../../pg -Destination $env:GITHUB_WORKSPACE
     - name: upload-log
       if: true
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test_log
         path: src/bin/pg_rewind/tmp_check/log
