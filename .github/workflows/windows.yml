@@ -9,7 +9,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: clone-repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: rename-dir
       working-directory: ${{ env.GITHUB_WORKSPACE }}/../..
       run: Move-Item –Path $env:GITHUB_WORKSPACE -Destination $env:GITHUB_WORKSPACE/../../pg
