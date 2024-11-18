@@ -341,6 +341,7 @@ typenameTypeMod(ParseState *pstate, const TypeName *typeName, Type typ)
 	ListCell   *l;
 	ArrayType  *arrtypmod;
 	ParseCallbackState pcbstate;
+	int32		*tsqlTypmod;
 
 	/* Return prespecified typmod if no typmod expressions */
 	if (typeName->typmods == NIL)
@@ -419,7 +420,15 @@ typenameTypeMod(ParseState *pstate, const TypeName *typeName, Type typ)
 	 * are declared with permissible datalength at the time of table or stored procedure creation
 	 */
 	if (validate_var_datatype_scale_hook)
-			(*validate_var_datatype_scale_hook)(typeName, typ);
+	{
+		tsqlTypmod = (*validate_var_datatype_scale_hook)(typeName, typ);
+		if (tsqlTypmod) {
+			result = *tsqlTypmod;
+			pfree(tsqlTypmod);
+			pfree(datums);
+			return result;
+		}
+	}
 
 	/* hardwired knowledge about cstring's representation details here */
 	arrtypmod = construct_array(datums, n, CSTRINGOID,
